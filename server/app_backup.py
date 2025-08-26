@@ -3,8 +3,13 @@ from flask_cors import CORS
 import json
 import os
 import secrets
+import re
+from datetime import datetime
 from functools import wraps
 from pathlib import Path
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 def create_app():
@@ -23,6 +28,13 @@ def create_app():
     admin_password = os.getenv('ADMIN_PASSWORD', 'brush2025')
     active_tokens = set()
 
+    # Email configuration
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    smtp_port = int(os.getenv('SMTP_PORT', '587'))
+    smtp_username = os.getenv('SMTP_USERNAME', '')
+    smtp_password = os.getenv('SMTP_PASSWORD', '')
+    admin_email = os.getenv('ADMIN_EMAIL', 'zzuisa.cn@gmail.com')
+
     def require_auth(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -34,6 +46,59 @@ def create_app():
                 return jsonify({"error": "Unauthorized"}), 401
             return f(*args, **kwargs)
         return wrapper
+
+    def validate_email(email):
+        """Validate email format"""
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(pattern, email) is not None
+
+    def send_notification_email(contact_data):
+        """Send notification email to admin"""
+        if not smtp_username or not smtp_password:
+            return False
+        
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = smtp_username
+            msg['To'] = admin_email
+            msg['Subject'] = f"New Contact Form Message - {contact_data.get('name', 'Anonymous')}"
+            
+            body = f"""
+            New contact form message received:
+            
+            Name: {contact_data.get('name', 'Not provided')}
+            Email: {contact_data.get('email', 'Not provided')}
+            Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+            
+            Message:
+            {contact_data.get('message', 'No content')}
+            """
+            
+            msg.attach(MIMEText(body, 'plain', 'utf-8'))
+            
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.send_message(msg)
+            server.quit()
+            return True
+        except Exception as e:
+            print(f"Failed to send email: {e}")
+            return False
+
+    def load_contacts():
+        """Load all contact records"""
+        contacts = []
+        if contacts_file.exists():
+            with contacts_file.open('r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        try:
+                            contacts.append(json.loads(line))
+                        except:
+                            continue
+        return contacts
 
     if not paintings_file.exists():
         paintings_file.write_text(json.dumps({"paintings": []}, ensure_ascii=False, indent=2), encoding='utf-8')
@@ -115,16 +180,100 @@ def create_app():
         save_paintings(data)
         return jsonify({"status": "deleted", "id": pid})
 
-    # Contact API
+    # Contact API - 优化版本
     @app.post('/api/contact')
     def contact():
         payload = request.get_json(silent=True) or request.form.to_dict()
-        if not payload.get('email') or not payload.get('message'):
-            return jsonify({"success": False, "message": "Email and message are required"}), 400
-        line = json.dumps({**payload}, ensure_ascii=False)
+        
+        # 验证必填字段
+        name = payload.get('name', '').strip()
+        email = payload.get('email', '').strip()
+        message = payload.get('message', '').strip()
+        
+        if not name:
+            return jsonify({"success": False, "message": "Name is required"}), 400
+        if not email:
+            return jsonify({"success": False, "message": "Email is required"}), 400
+        if not message:
+            return jsonify({"success": False, "message": "Message content is required"}), 400
+        
+        # 验证邮箱格式
+        if not validate_email(email):
+            return jsonify({"success": False, "message": "Invalid email format"}), 400
+        
+        # 添加时间戳
+        contact_data = {
+            'name': name,
+            'email': email,
+            'message': message,
+            'timestamp': datetime.now().isoformat(),
+            'ip': request.remote_addr
+        }
+        
+        # 保存到文件
+        line = json.dumps(contact_data, ensure_ascii=False)
         with contacts_file.open('a', encoding='utf-8') as f:
             f.write(line + "\n")
-        return jsonify({"success": True})
+        
+        # 发送通知邮件
+        email_sent = send_notification_email(contact_data)
+        
+        return jsonify({
+            "success": True, 
+            "message": "Message sent successfully! We will get back to you soon.",
+            "email_sent": email_sent
+        })
+
+    @app.get('/api/contacts')
+    @require_auth
+    def get_contacts():
+        """Get all contact records (requires authentication)"""
+        contacts = load_contacts()
+        # Sort by time in descending order
+        contacts.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+        return jsonify(contacts)
+
+    @app.get('/api/contacts/stats')
+    @require_auth
+    def get_contact_stats():
+        """Get contact form statistics"""
+        contacts = load_contacts()
+        total = len(contacts)
+        
+        # Monthly statistics
+        monthly_stats = {}
+        for contact in contacts:
+            timestamp = contact.get('timestamp', '')
+            if timestamp:
+                try:
+                    date = datetime.fromisoformat(timestamp)
+                    month_key = date.strftime('%Y-%m')
+                    monthly_stats[month_key] = monthly_stats.get(month_key, 0) + 1
+                except:
+                    continue
+        
+        return jsonify({
+            "total": total,
+            "monthly_stats": monthly_stats,
+            "recent_count": len([c for c in contacts if c.get('timestamp', '') > (datetime.now().replace(day=1)).isoformat()])
+        })
+
+    @app.delete('/api/contacts/<int:contact_id>')
+    @require_auth
+    def delete_contact(contact_id):
+        """Delete specific contact record"""
+        contacts = load_contacts()
+        if contact_id < 0 or contact_id >= len(contacts):
+            return jsonify({"error": "Not Found"}), 404
+        
+        deleted_contact = contacts.pop(contact_id)
+        
+        # Rewrite file
+        with contacts_file.open('w', encoding='utf-8') as f:
+            for contact in contacts:
+                f.write(json.dumps(contact, ensure_ascii=False) + "\n")
+        
+        return jsonify({"success": True, "deleted": deleted_contact})
 
     # Uploads
     @app.post('/api/upload')

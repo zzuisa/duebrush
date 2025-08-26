@@ -333,28 +333,164 @@ BRUSHED.fancyBox = function(){
 ================================================== */
 
 BRUSHED.contactForm = function(){
-	$("#contact-submit").on('click',function() {
-		$contact_form = $('#contact-form');
-		
-		var fields = $contact_form.serialize();
-		
-		$.ajax({
-			type: "POST",
-			url: "_include/php/contact.php",
-			data: fields,
-			dataType: 'json',
-			success: function(response) {
-				
-				if(response.status){
-					$('#contact-form input').val('');
-					$('#contact-form textarea').val('');
-				}
-				
-				$('#response').empty().html(response.html);
-			}
-		});
-		return false;
-	});
+    var $form = $('#contact-form');
+    var $submitBtn = $('#contact-submit');
+    var $response = $('#response');
+    
+    // 清除错误消息
+    function clearErrors() {
+        $('.error-message').text('');
+        $('.error-message').hide();
+    }
+    
+    // 显示错误消息
+    function showError(fieldId, message) {
+        $('#' + fieldId + '-error').text(message).show();
+    }
+    
+    // 显示响应消息
+    function showResponse(message, type) {
+        $response.removeClass('success error').addClass(type).text(message).show();
+        if (type === 'success') {
+            // 成功时3秒后隐藏消息
+            setTimeout(function() {
+                $response.fadeOut();
+            }, 3000);
+        }
+    }
+    
+    // 表单验证
+    function validateForm() {
+        clearErrors();
+        var isValid = true;
+        
+        var name = $('#contact_name').val().trim();
+        var email = $('#contact_email').val().trim();
+        var message = $('#contact_message').val().trim();
+        
+        // 验证姓名
+        if (!name) {
+            showError('name', 'Please enter your name');
+            isValid = false;
+        }
+        
+        // 验证邮箱
+        if (!email) {
+            showError('email', 'Please enter your email address');
+            isValid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showError('email', 'Please enter a valid email address');
+            isValid = false;
+        }
+        
+        // 验证消息
+        if (!message) {
+            showError('message', 'Please enter your message');
+            isValid = false;
+        } else if (message.length < 10) {
+            showError('message', 'Message must be at least 10 characters long');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    // 设置加载状态
+    function setLoading(loading) {
+        if (loading) {
+            $submitBtn.prop('disabled', true);
+            $submitBtn.find('.submit-text').hide();
+            $submitBtn.find('.loading-text').show();
+        } else {
+            $submitBtn.prop('disabled', false);
+            $submitBtn.find('.submit-text').show();
+            $submitBtn.find('.loading-text').hide();
+        }
+    }
+    
+    // 表单提交处理
+    $form.on('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+            return false;
+        }
+        
+        setLoading(true);
+        clearErrors();
+        
+        var formData = {
+            name: $('#contact_name').val().trim(),
+            email: $('#contact_email').val().trim(),
+            message: $('#contact_message').val().trim()
+        };
+        
+        $.ajax({
+            type: "POST",
+            url: API_BASE + "/api/contact",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(response) {
+                setLoading(false);
+                if (response.success) {
+                    showResponse(response.message || 'Message sent successfully! We will get back to you soon.', 'success');
+                    // 清空表单
+                    $form[0].reset();
+                } else {
+                    showResponse(response.message || 'Failed to send message. Please try again later.', 'error');
+                }
+            },
+            error: function(xhr) {
+                setLoading(false);
+                var errorMessage = 'Failed to send message. Please try again later.';
+                
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.status === 0) {
+                    errorMessage = 'Network connection failed. Please check your internet connection.';
+                } else if (xhr.status === 500) {
+                    errorMessage = 'Server error. Please try again later.';
+                }
+                
+                showResponse(errorMessage, 'error');
+            }
+        });
+        
+        return false;
+    });
+    
+    // 实时验证
+    $('#contact_name, #contact_email, #contact_message').on('blur', function() {
+        var fieldId = $(this).attr('id');
+        var value = $(this).val().trim();
+        
+        // 清除当前字段的错误
+        $('#' + fieldId + '-error').text('').hide();
+        
+        // 验证当前字段
+        if (fieldId === 'contact_name' && !value) {
+            showError('name', 'Please enter your name');
+        } else if (fieldId === 'contact_email') {
+            if (!value) {
+                showError('email', 'Please enter your email address');
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                showError('email', 'Please enter a valid email address');
+            }
+        } else if (fieldId === 'contact_message') {
+            if (!value) {
+                showError('message', 'Please enter your message');
+            } else if (value.length < 10) {
+                showError('message', 'Message must be at least 10 characters long');
+            }
+        }
+    });
+    
+    // 输入时清除错误
+    $('#contact_name, #contact_email, #contact_message').on('input', function() {
+        var fieldId = $(this).attr('id');
+        $('#' + fieldId + '-error').text('').hide();
+    });
 }
 
 

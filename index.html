@@ -341,21 +341,27 @@
         
         	<form id="contact-form" class="contact-form" action="#">
             	<p class="contact-name">
-            		<input id="contact_name" type="text" placeholder="Full Name" value="" name="name" />
+            		<input id="contact_name" type="text" placeholder="Your Name *" value="" name="name" required />
+                    <span class="error-message" id="name-error"></span>
                 </p>
                 <p class="contact-email">
-                	<input id="contact_email" type="text" placeholder="Email Address" value="" name="email" />
+                	<input id="contact_email" type="email" placeholder="Your Email Address *" value="" name="email" required />
+                    <span class="error-message" id="email-error"></span>
                 </p>
                 <p class="contact-message">
-                	<textarea id="contact_message" placeholder="Your Message" name="message" rows="15" cols="40"></textarea>
+                	<textarea id="contact_message" placeholder="Your Message *" name="message" rows="8" cols="40" required></textarea>
+                    <span class="error-message" id="message-error"></span>
                 </p>
                 <p class="contact-submit">
-                	<a id="contact-submit" class="submit" href="#">Send Your Email</a>
+                	<button id="contact-submit" class="submit" type="submit">
+                        <span class="submit-text">Send Message</span>
+                        <span class="loading-text" style="display: none;">
+                            <i class="icon-spinner icon-spin"></i> Sending...
+                        </span>
+                    </button>
                 </p>
                 
-                <div id="response">
-                
-                </div>
+                <div id="response" class="response-message"></div>
             </form>
          
         </div>
@@ -364,7 +370,7 @@
         	<div class="contact-details">
         		<h3>Contact Details</h3>
                 <ul>
-                    <li><a href="#">zzuisa.cn@gmail.com</a></li>
+                    <li><a href="mailto:zzuisa.cn@gmail.com">zzuisa.cn@gmail.com</a></li>
                     <li>(049) 15259023xxx</li>
                     <li>
                         Mr. Wang
@@ -374,6 +380,15 @@
                         Germany
                     </li>
                 </ul>
+                
+                <div class="contact-info">
+                    <h4>Working Hours</h4>
+                    <p>Monday - Friday: 9:00 - 18:00</p>
+                    <p>Weekend: 10:00 - 16:00</p>
+                    
+                    <h4>Response Time</h4>
+                    <p>We will respond to your message within 24 hours</p>
+                </div>
             </div>
         </div>
     </div>

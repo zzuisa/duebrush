@@ -1,5 +1,23 @@
-flask==3.0.3
-flask-cors==4.0.0
+# Web Framework
+Flask==3.0.3
+Flask-CORS==4.0.0
+Werkzeug==3.0.3
+
+# Email Support
+# Note: smtplib and email modules are part of Python standard library
+
+# Development and Production
+python-dotenv==1.0.0
+
+# Optional: For production deployment
+# gunicorn==21.2.0
+# uwsgi==2.0.24
+
+# Optional: For enhanced security
+# cryptography==41.0.7
+
+# Optional: For better JSON handling
+# ujson==5.8.0
 
 
 

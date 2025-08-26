@@ -1398,3 +1398,100 @@ footer .credits {
        -o-transition: none;
           transition: none;
 }
+
+/* ==================================================
+   Contact Form Styles
+================================================== */
+
+/* 错误消息样式 */
+.error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    min-height: 16px;
+}
+
+/* 响应消息样式 */
+.response-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+}
+
+.response-message.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.response-message.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* 加载状态样式 */
+.loading-text {
+    display: inline-block;
+}
+
+.icon-spinner {
+    animation: spin 1s linear infinite;
+    margin-right: 5px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 按钮禁用状态 */
+.submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 联系信息样式 */
+.contact-info {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.contact-info h4 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.contact-info p {
+    color: #666;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* 表单验证样式 */
+.contact-form input:invalid,
+.contact-form textarea:invalid {
+    border-color: #e74c3c;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .contact-form textarea {
+        height: 120px;
+    }
+    
+    .contact-info {
+        margin-top: 20px;
+    }
+}

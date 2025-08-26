@@ -324,6 +324,7 @@
             <li class="active"><a href="#tab-paintings">画作管理</a></li>
             <li><a href="#tab-slider">轮播图管理</a></li>
             <li><a href="#tab-author">作者信息管理</a></li>
+            <li><a href="#tab-contacts">联系表单管理</a></li>
         </ul>
 
         <div id="tab-paintings" class="tab-pane active">
@@ -439,6 +440,34 @@
                         </tr>
                     </thead>
                     <tbody id="author_tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-contacts" class="tab-pane hidden">
+            <h3>Contact Form Management</h3>
+            <div class="row">
+                <div class="span12">
+                    <div class="alert alert-info">
+                        <strong>Statistics:</strong>
+                        <span id="contact-stats">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Message Preview</th>
+                            <th>Time</th>
+                            <th>IP Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contact_tbody"></tbody>
                 </table>
             </div>
         </div>
@@ -836,10 +865,108 @@
             showToast('作者表单已重置', 'info');
         });
 
+        // Contact Form Management
+        function loadContacts(){
+            $.getJSON(API + '/api/contacts').done(function(contacts){
+                var $tb = $('#contact_tbody').empty();
+                (contacts||[]).forEach(function(contact, index){
+                    var tr = $('<tr>');
+                    tr.append('<td>'+ (index + 1) +'</td>');
+                    tr.append('<td>'+ (contact.name||'') +'</td>');
+                    tr.append('<td>'+ (contact.email||'') +'</td>');
+                    tr.append('<td>'+ (contact.message ? (contact.message.length > 50 ? contact.message.substring(0, 50) + '...' : contact.message) : '') +'</td>');
+                    
+                    // Format time
+                    var timeStr = '';
+                    if(contact.timestamp) {
+                        try {
+                            timeStr = new Date(contact.timestamp).toLocaleString('en-US');
+                        } catch(e) {
+                            timeStr = contact.timestamp;
+                        }
+                    }
+                    tr.append('<td>'+ timeStr +'</td>');
+                    tr.append('<td>'+ (contact.ip||'') +'</td>');
+                    
+                    var act = $('<td class="actions">');
+                    $('<button class="btn btn-mini btn-info" type="button" title="View Details">Details</button>').on('click', function(){ 
+                        showContactDetail(contact); 
+                    }).appendTo(act);
+                    $('<button class="btn btn-mini btn-danger" type="button" title="Delete">Delete</button>').on('click', function(){ 
+                        deleteContact(index); 
+                    }).appendTo(act);
+                    tr.append(act);
+                    $tb.append(tr);
+                });
+            }).fail(function(xhr) {
+                handleAuthFail(xhr);
+                showToast('Failed to load contact forms', 'error');
+            });
+        }
+
+        function loadContactStats(){
+            $.getJSON(API + '/api/contacts/stats').done(function(stats){
+                var statsText = 'Total Messages: ' + stats.total + ' | This Month: ' + stats.recent_count;
+                $('#contact-stats').text(statsText);
+            }).fail(function(xhr) {
+                handleAuthFail(xhr);
+            });
+        }
+
+        function showContactDetail(contact){
+            var detailHtml = `
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Contact Form Details</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        <tr><td><strong>Name:</strong></td><td>${contact.name || ''}</td></tr>
+                        <tr><td><strong>Email:</strong></td><td>${contact.email || ''}</td></tr>
+                        <tr><td><strong>Time:</strong></td><td>${contact.timestamp ? new Date(contact.timestamp).toLocaleString('en-US') : ''}</td></tr>
+                        <tr><td><strong>IP Address:</strong></td><td>${contact.ip || ''}</td></tr>
+                        <tr><td><strong>Message:</strong></td><td style="white-space: pre-wrap;">${contact.message || ''}</td></tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            `;
+            
+            // Create modal
+            var $modal = $('<div class="modal fade" tabindex="-1" role="dialog">')
+                .append($('<div class="modal-dialog" role="document">')
+                    .append($('<div class="modal-content">').html(detailHtml)));
+            
+            $('body').append($modal);
+            $modal.modal('show');
+            
+            // Remove modal after closing
+            $modal.on('hidden.bs.modal', function() {
+                $modal.remove();
+            });
+        }
+
+        function deleteContact(index){
+            if(!confirm('Are you sure you want to delete this contact form record?')) return;
+            $.ajax({url: API + '/api/contacts/' + index, method: 'DELETE', headers: authHeaders()})
+                .done(function(){
+                    loadContacts();
+                    loadContactStats();
+                    showToast('Contact form deleted successfully', 'success');
+                })
+                .fail(function(xhr) {
+                    handleAuthFail(xhr);
+                    showToast('Failed to delete, please try again', 'error');
+                });
+        }
+
         // 初始加载数据
         $.getJSON(API + '/api/slider').done(renderSlider);
         loadAuthors();
         load();
+        loadContacts(); // Load contact forms initially
+        loadContactStats(); // Load contact form statistics
         $('#logout').on('click', function(){ localStorage.removeItem('db_token'); window.location.href = 'login.html'; });
     })();
     </script>
