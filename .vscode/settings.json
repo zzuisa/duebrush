@@ -1,0 +1,9 @@
+{
+    "terminal.integrated.profiles": {
+    "Anaconda": {
+        "path": "D:\\Anaconda3\\Scripts\\activate.ba",
+        "args": ["base"]
+    },
+    "terminal.integrated.defaultProfile.windows": "Anaconda"
+}
+}

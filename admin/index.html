@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Düsselbrush</title>
+    <link href="../_include/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{padding:20px}
+        .container{max-width:1100px}
+        .actions button{margin-right:8px}
+        textarea{width:100%}
+        .thumb{width:80px;height:60px;object-fit:cover}
+        .muted{color:#888}
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+        .preview{display:block;margin:6px 0;max-width:180px;max-height:140px;border:1px solid #eee}
+        .nav-tabs{margin-bottom:16px}
+        .hidden{display:none}
+        
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { max-width: 100%; }
+            
+            /* 顶部栏适配 */
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .topbar h1 {
+                font-size: 24px;
+                margin-bottom: 0;
+            }
+            
+            /* 导航标签适配 */
+            .nav-tabs > li {
+                float: none;
+                display: block;
+                margin-bottom: 5px;
+            }
+            .nav-tabs > li > a {
+                border-radius: 4px;
+                margin-right: 0;
+            }
+            .row{
+                margin-left: 0 !important;
+            }
+            
+            /* 表单适配 */
+            .row .span6 {
+                width: 100%;
+                margin-left: 0;
+                margin-bottom: 15px;
+            }
+            .row .span3 {
+                width: 100%;
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            .row .span4 {
+                width: 100%;
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            
+            /* 按钮适配 */
+            .btn {
+                width: 100%;
+                margin-bottom: 8px;
+                margin-right: 0;
+            }
+            .btn + .btn {
+                margin-left: 0;
+            }
+            /* 表格中的按钮适配 */
+            .table .btn {
+                width: auto;
+                margin: 1px;
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+            .table .actions {
+                white-space: nowrap;
+            }
+            /* 作者管理表格适配 */
+            #author_tbody .thumb {
+                width: 40px;
+                height: 30px;
+                object-fit: cover;
+                border-radius: 4px;
+            }
+            @media (max-width: 480px) {
+                #author_tbody .thumb {
+                    width: 30px;
+                    height: 22px;
+                }
+            }
+            
+            /* 作者头像预览统一样式 */
+            #author_avatar_preview {
+                width: 120px !important;
+                height: 90px !important;
+                object-fit: cover !important;
+                border-radius: 6px;
+                border: 2px solid #eee;
+            }
+            
+            /* 表格适配 */
+            .table {
+                font-size: 12px;
+                width: 100%;
+                table-layout: fixed;
+            }
+            .table th,
+            .table td {
+                padding: 6px 4px;
+                word-wrap: break-word;
+                overflow: hidden;
+            }
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .table-responsive .table {
+                margin-bottom: 0;
+            }
+            /* 设置列宽 */
+            .table th:nth-child(1), .table td:nth-child(1) { width: 8%; }  /* ID */
+            .table th:nth-child(2), .table td:nth-child(2) { width: 12%; } /* 预览 */
+            .table th:nth-child(3), .table td:nth-child(3) { width: 20%; } /* 标题 */
+            .table th:nth-child(4), .table td:nth-child(4) { width: 15%; } /* 分类 */
+            .table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* 年份 */
+            .table th:nth-child(6), .table td:nth-child(6) { width: 10%; } /* 可售 */
+            .table th:nth-child(7), .table td:nth-child(7) { width: 25%; } /* 操作 */
+            
+            /* 预览图片适配 */
+            .preview {
+                max-width: 120px;
+                max-height: 90px;
+                object-fit: cover;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+            }
+            .thumb {
+                width: 60px;
+                height: 45px;
+                object-fit: cover;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+            }
+            
+            /* 轮播图管理适配 */
+            .slide-del {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            /* 文件输入适配 */
+            input[type="file"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            /* 标签适配 */
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            
+            /* 输入框适配 */
+            input[type="text"],
+            input[type="password"],
+            select,
+            textarea {
+                width: 100%;
+                box-sizing: border-box;
+                margin-bottom: 10px;
+            }
+            
+            /* 复选框适配 */
+            .checkbox {
+                margin-top: 10px;
+            }
+            .checkbox input[type="checkbox"] {
+                margin-right: 8px;
+            }
+        }
+        
+                    /* 超小屏幕适配 */
+            @media (max-width: 480px) {
+                body { padding: 5px; }
+                .topbar h1 { font-size: 20px; }
+                .table { 
+                    font-size: 10px; 
+                    width: 100%;
+                }
+                .table th,
+                .table td {
+                    padding: 3px 1px;
+                    font-size: 10px;
+                }
+                .table-responsive {
+                    margin: 0 -5px;
+                    border-radius: 0;
+                }
+                            .preview {
+                max-width: 100px;
+                max-height: 75px;
+                object-fit: cover;
+                border-radius: 3px;
+            }
+            .thumb {
+                width: 40px;
+                height: 30px;
+                object-fit: cover;
+                border-radius: 3px;
+            }
+                /* 超小屏幕的列宽调整 */
+                .table th:nth-child(1), .table td:nth-child(1) { width: 6%; }   /* ID */
+                .table th:nth-child(2), .table td:nth-child(2) { width: 10%; }  /* 预览 */
+                .table th:nth-child(3), .table td:nth-child(3) { width: 18%; }  /* 标题 */
+                .table th:nth-child(4), .table td:nth-child(4) { width: 12%; }  /* 分类 */
+                .table th:nth-child(5), .table td:nth-child(5) { width: 8%; }   /* 年份 */
+                .table th:nth-child(6), .table td:nth-child(6) { width: 8%; }   /* 可售 */
+                .table th:nth-child(7), .table td:nth-child(7) { width: 38%; }  /* 操作 */
+                
+                            /* 环境切换适配 */
+            #envSwitch {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+        }
+        
+        /* Toast 提示样式 */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        #toast {
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            min-width: 200px;
+            max-width: 300px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        #toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        #toast.success {
+            background: #28a745;
+        }
+        
+        #toast.error {
+            background: #dc3545;
+        }
+        
+        #toast.warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        #toast.info {
+            background: #17a2b8;
+        }
+        
+        /* 手机端Toast适配 */
+        @media (max-width: 768px) {
+            #toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            #toast {
+                min-width: auto;
+                max-width: none;
+                width: 100%;
+            }
+        }
+    </style>
+    <script>window.API_BASE = window.API_BASE || 'https://roguelife.de';</script>
+    <script src="../_include/js/jquery.min.js"></script>
+    <script src="../_include/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <h1 style="margin:0">站点管理</h1>
+            <div>
+                <span class="muted" id="apiInfo"></span>
+                <select id="envSwitch" style="margin-right: 10px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="https://roguelife.de">生产环境</option>
+                    <option value="http://localhost:5000">开发环境</option>
+                </select>
+                <button id="logout" class="btn" type="button">退出</button>
+            </div>
+        </div>
+        <p class="muted">后端已配置：<code id="apiCode"></code></p>
+        
+        <!-- Toast 提示组件 -->
+        <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: none;">
+            <div id="toast" style="background: #333; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-bottom: 10px; min-width: 200px; max-width: 300px;">
+                <div id="toast-message"></div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="adminTabs">
+            <li class="active"><a href="#tab-paintings">画作管理</a></li>
+            <li><a href="#tab-slider">轮播图管理</a></li>
+            <li><a href="#tab-author">作者信息管理</a></li>
+        </ul>
+
+        <div id="tab-paintings" class="tab-pane active">
+            <h3>新增 / 编辑</h3>
+            <form id="form" action="javascript:void(0)" autocomplete="off">
+                <input type="hidden" id="id">
+                <div class="row">
+                    <div class="span6">
+                        <label>标题</label>
+                        <input class="span6" id="title" placeholder="标题">
+                        <label>分类</label>
+                        <select class="span6" id="category_select"></select>
+                        <label>缩略图 URL</label>
+                        <input class="span6" id="thumb_image" placeholder="(默认 /uploads/xxx 或完整URL)">
+                        <input type="file" id="thumb_file" accept="image/*" class="span6">
+                        <img id="thumb_preview" class="preview" style="display:none" />
+                        <label>大图 URL</label>
+                        <input class="span6" id="full_image" placeholder="(默认 /uploads/xxx 或完整URL)">
+                        <input type="file" id="full_file" accept="image/*" class="span6">
+                        <img id="full_preview" class="preview" style="display:none" />
+                    </div>
+                    <div class="span6">
+                        <label>年份</label>
+                        <input class="span3" id="year" placeholder="2024">
+                        <label>尺寸</label>
+                        <input class="span3" id="size" placeholder="80x60 cm">
+                        <label>材质</label>
+                        <input class="span6" id="material" placeholder="Acrylic on canvas">
+                        <label>简介</label>
+                        <textarea class="span6" id="description" rows="4" placeholder="简介..."></textarea>
+                        <label class="checkbox"><input type="checkbox" id="for_sale"> 可售</label>
+                    </div>
+                </div>
+                <div style="margin:10px 0">
+                    <button class="btn btn-primary" id="save" type="submit">保存</button>
+                    <button class="btn" id="reset" type="button">重置</button>
+                </div>
+            </form>
+
+            <hr/>
+
+            <h3>列表</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>预览</th>
+                            <th>标题</th>
+                            <th>分类</th>
+                            <th>年份</th>
+                            <th>可售</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-slider" class="tab-pane hidden">
+            <h3>轮播图</h3>
+            <form id="sliderForm" action="javascript:void(0)">
+                <div id="sliderRows"></div>
+                <button class="btn" id="addSlide" type="button">添加轮播项</button>
+                <button class="btn btn-primary" id="saveSlider" type="submit">保存轮播</button>
+            </form>
+        </div>
+
+        <div id="tab-author" class="tab-pane hidden">
+            <h3>新增 / 编辑作者</h3>
+            <form id="authorForm" action="javascript:void(0)" autocomplete="off">
+                <input type="hidden" id="author_id">
+                <div class="row">
+                    <div class="span6">
+                        <label>姓名</label>
+                        <input class="span6" id="author_name" placeholder="作者姓名">
+                        <label>职位</label>
+                        <input class="span6" id="author_position" placeholder="职位，如：CTO/Founder">
+                        <label>头像 URL</label>
+                        <input class="span6" id="author_avatar" placeholder="(默认 /uploads/xxx 或完整URL)">
+                        <input type="file" id="author_avatar_file" accept="image/*" class="span6">
+                        <img id="author_avatar_preview" class="preview" style="display:none" />
+                    </div>
+                    <div class="span6">
+                        <label>简介</label>
+                        <textarea class="span6" id="author_bio" rows="4" placeholder="作者简介"></textarea>
+                        <label>社交媒体</label>
+                        <input class="span3" id="author_twitter" placeholder="Twitter">
+                        <input class="span3" id="author_facebook" placeholder="Facebook">
+                        <input class="span3" id="author_linkedin" placeholder="LinkedIn">
+                        <input class="span3" id="author_email" placeholder="Email">
+                    </div>
+                </div>
+                <div style="margin:10px 0">
+                    <button class="btn btn-primary" id="saveAuthor" type="submit">保存</button>
+                    <button class="btn" id="resetAuthor" type="button">重置</button>
+                </div>
+            </form>
+
+            <hr/>
+
+            <h3>作者列表</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>头像</th>
+                            <th>姓名</th>
+                            <th>职位</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="author_tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        // 环境管理
+        var API = localStorage.getItem('api_base') || window.API_BASE || 'https://roguelife.de';
+        var token = localStorage.getItem('db_token');
+        var pendingThumbFile = null;
+        var pendingFullFile = null;
+        var pendingAvatarFile = null;
+        var defaultCategories = ['design','photography','video','painting','illustration'];
+        
+        // 更新API显示
+        function updateApiInfo() {
+            $('#apiInfo').text('API ' + API);
+            $('#apiCode').text(API);
+        }
+        
+        // 环境切换处理
+        $('#envSwitch').val(API).on('change', function() {
+            var newApi = $(this).val();
+            if (newApi !== API) {
+                if (confirm('切换环境将清除当前登录状态，确定切换吗？')) {
+                    API = newApi;
+                    localStorage.setItem('api_base', API);
+                    localStorage.removeItem('db_token');
+                    updateApiInfo();
+                    window.location.reload();
+                } else {
+                    $(this).val(API); // 恢复原值
+                }
+            }
+        });
+        
+        updateApiInfo();
+
+        // Toast 提示函数
+        function showToast(message, type = 'info', duration = 3000) {
+            var toast = $('#toast');
+            var container = $('#toast-container');
+            
+            // 设置消息和类型
+            $('#toast-message').text(message);
+            toast.removeClass('success error warning info').addClass(type);
+            
+            // 显示toast
+            container.show();
+            setTimeout(function() {
+                toast.addClass('show');
+            }, 10);
+            
+            // 自动隐藏
+            setTimeout(function() {
+                toast.removeClass('show');
+                setTimeout(function() {
+                    container.hide();
+                }, 300);
+            }, duration);
+        }
+
+        if(!token){ window.location.href = 'login.html'; return; }
+        function authHeaders() { return { 'Authorization': 'Bearer ' + token }; }
+        function handleAuthFail(xhr){ if(xhr && xhr.status === 401){ localStorage.removeItem('db_token'); window.location.href = 'login.html'; } }
+        function toAbs(url){ if(!url) return ''; if(/^https?:\/\//i.test(url)) return url; if(url.startsWith('/')) return API + url; return API + '/uploads/' + url; }
+        function normalizeToUploads(value){ if(!value) return value; if(/^https?:\/\//i.test(value)) return value; if(value.startsWith('/')) return value; return '/uploads/' + value.replace(/^\/+/, ''); }
+
+        // 渲染分类下拉
+        function renderCategories(list){
+            var set = new Set(defaultCategories);
+            (list||[]).forEach(function(p){ if(p && p.category){ set.add(String(p.category)); } });
+            var options = '';
+            Array.from(set).sort().forEach(function(c){ options += '<option value="'+ c +'">'+ c +'</option>'; });
+            $('#category_select').html(options);
+        }
+
+        // 菜单切换
+        $('#adminTabs a').on('click', function(e){
+            e.preventDefault();
+            $('#adminTabs li').removeClass('active');
+            $(this).parent().addClass('active');
+            $('.tab-pane').addClass('hidden');
+            $($(this).attr('href')).removeClass('hidden');
+        });
+
+        // 画作管理
+        function load(){
+            $.ajax({ url: API + '/api/paintings', method: 'GET' })
+              .done(function(list){
+                renderCategories(list);
+                var $tb = $('#tbody').empty();
+                (list||[]).forEach(function(p){
+                    var tr = $('<tr>');
+                    tr.append('<td>'+ (p.id||'') +'</td>');
+                    var thumbUrl = toAbs(p.thumb_image||'');
+                    tr.append('<td>'+ (thumbUrl?('<img class="thumb" src="'+ thumbUrl +'">'):'') +'</td>');
+                    tr.append('<td>'+ (p.title||'') +'</td>');
+                    tr.append('<td>'+ (p.category||'') +'</td>');
+                    tr.append('<td>'+ (p.year||'') +'</td>');
+                    tr.append('<td>'+ (p.for_sale? '是':'否') +'</td>');
+                    var act = $('<td class="actions">');
+                    $('<button class="btn btn-mini" type="button">编辑</button>').on('click', function(){ fillForm(p); }).appendTo(act);
+                    $('<button class="btn btn-mini btn-danger" type="button">删除</button>').on('click', function(){ del(p.id); }).appendTo(act);
+                    tr.append(act);
+                    $tb.append(tr);
+                });
+              });
+        }
+        function fillForm(p){
+            $('#id').val(p.id||'');
+            $('#title').val(p.title||'');
+            $('#category_select').val(p.category||'design');
+            $('#thumb_image').val(p.thumb_image||'');
+            $('#full_image').val(p.full_image||'');
+            $('#year').val(p.year||'');
+            $('#size').val(p.size||'');
+            $('#material').val(p.material||'');
+            $('#description').val(p.description||'');
+            $('#for_sale').prop('checked', !!p.for_sale);
+            pendingThumbFile = null; pendingFullFile = null;
+            $('#thumb_preview').hide().attr('src','');
+            $('#full_preview').hide().attr('src','');
+        }
+        function collect(){
+            return {
+                title: $('#title').val(), category: $('#category_select').val(),
+                thumb_image: normalizeToUploads($('#thumb_image').val()),
+                full_image: normalizeToUploads($('#full_image').val()),
+                year: $('#year').val(), size: $('#size').val(), material: $('#material').val(),
+                description: $('#description').val(), for_sale: $('#for_sale').is(':checked')
+            };
+        }
+        function upload(file){ var fd = new FormData(); fd.append('file', file); fd.append('filename', slug($('#title').val()||'art')); return $.ajax({ url: API + '/api/upload', method: 'POST', data: fd, processData: false, contentType: false, headers: authHeaders() }); }
+        function uploadIfNeededThenSave(payload, isUpdate, id){
+            var p = $.Deferred().resolve();
+            if(pendingThumbFile){ p = p.then(function(){ return upload(pendingThumbFile).done(function(res){ if(res && res.url){ payload.thumb_image = res.url; } }); }); }
+            if(pendingFullFile){ p = p.then(function(){ return upload(pendingFullFile).done(function(res){ if(res && res.url){ payload.full_image = res.url; } }); }); }
+            p.then(function(){
+                var req = isUpdate ? { url: API + '/api/paintings/' + id, method: 'PUT' } : { url: API + '/api/paintings', method: 'POST' };
+                $.ajax($.extend({}, req, { data: JSON.stringify(payload), contentType: 'application/json', headers: authHeaders() }))
+                 .done(function(){ 
+                     var form = $('#form')[0];
+                     if(form && typeof form.reset === 'function') {
+                         form.reset(); 
+                     }
+                     resetPreviews(); 
+                     load(); 
+                     showToast(isUpdate ? '画作更新成功' : '画作添加成功', 'success');
+                 })
+                 .fail(function(xhr) {
+                     handleAuthFail(xhr);
+                     showToast('操作失败，请重试', 'error');
+                 });
+            });
+        }
+        function resetPreviews(){ pendingThumbFile = null; pendingFullFile = null; $('#thumb_preview').hide().attr('src',''); $('#full_preview').hide().attr('src',''); }
+        function save(e){ e.preventDefault(); e.stopPropagation(); var id=$('#id').val(); var payload=collect(); uploadIfNeededThenSave(payload, !!id, id); return false; }
+        function del(id){ 
+            if(!id) return; 
+            if(!confirm('确定删除 ID=' + id + ' 的画作吗？')) return; 
+            $.ajax({url: API + '/api/paintings/' + id, method: 'DELETE', headers: authHeaders()})
+                .done(function(){ 
+                    load(); 
+                    showToast('画作删除成功', 'success');
+                })
+                .fail(function(xhr) {
+                    handleAuthFail(xhr);
+                    showToast('删除失败，请重试', 'error');
+                }); 
+        }
+        function showPreview(file, img){ if(!file) return; var r=new FileReader(); r.onload=function(ev){ $(img).attr('src', ev.target.result).show(); }; r.readAsDataURL(file); }
+        function slug(v){ return (v||'').toLowerCase().replace(/[^a-z0-9\-_]+/g,'-').replace(/^-+|-+$/g,''); }
+        $('#thumb_file').on('change', function(){ pendingThumbFile = this.files && this.files[0] ? this.files[0] : null; if(pendingThumbFile){ showPreview(pendingThumbFile, '#thumb_preview'); } });
+        $('#full_file').on('change', function(){ pendingFullFile = this.files && this.files[0] ? this.files[0] : null; if(pendingFullFile){ showPreview(pendingFullFile, '#full_preview'); } });
+        $('#form').on('submit', save);
+        $('#save').on('click', save);
+        $('#reset').on('click', function(e){ 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            
+            // 手动重置所有表单字段
+            $('#title').val('');
+            $('#category_select').val('');
+            $('#thumb_image').val('');
+            $('#full_image').val('');
+            $('#year').val('');
+            $('#size').val('');
+            $('#material').val('');
+            $('#description').val('');
+            $('#for_sale').prop('checked', false);
+            $('#id').val('');
+            
+            // 重置文件输入
+            $('#thumb_file').val('');
+            $('#full_file').val('');
+            
+            // 重置预览图片
+            resetPreviews(); 
+            
+            showToast('表单已重置', 'info');
+        });
+
+        // 轮播管理
+        function renderSlider(items){
+            var $box = $('#sliderRows').empty();
+            (items||[]).forEach(function(s, idx){ addSlideRow(s.title||'', s.image||'', idx); });
+            if(!items || !items.length) addSlideRow('', '', 0);
+        }
+        function addSlideRow(title, image, idx){
+            var id = Date.now()+'_'+Math.random().toString(36).slice(2,7);
+            var row = $(
+                '<div class="row" data-id="'+id+'" style="margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 5px;">\
+                    <div class="span4">\
+                        <label>标题</label>\
+                        <input class="span4 slide-title" value="'+ (title||'') +'" placeholder="标题">\
+                    </div>\
+                    <div class="span6">\
+                        <label>图片 URL</label>\
+                        <input class="span6 slide-image" value="'+ (image||'') +'" placeholder="/uploads/xxx 或完整URL">\
+                        <input type="file" class="slide-file" accept="image/*">\
+                    </div>\
+                    <div class="span2" style="margin-top:22px">\
+                        <button class="btn btn-mini btn-danger slide-del" type="button">删除</button>\
+                    </div>\
+                </div>'
+            );
+            row.find('.slide-del').on('click', function(){ row.remove(); });
+            row.find('.slide-file').on('change', function(e){
+                var file = this.files && this.files[0]; if(!file) return;
+                var fd = new FormData();
+                fd.append('file', file);
+                fd.append('filename', slug($(row).find('.slide-title').val()||'slide'));
+                $.ajax({ url: API + '/api/upload', method: 'POST', data: fd, processData:false, contentType:false, headers: authHeaders() })
+                  .done(function(res){ if(res && res.url){ row.find('.slide-image').val(res.url); } }).fail(handleAuthFail);
+            });
+            $('#sliderRows').append(row);
+        }
+        $('#addSlide').on('click', function(){ addSlideRow('', '', 0); });
+        $('#saveSlider').on('click', function(e){
+            e.preventDefault(); e.stopPropagation();
+            var items = [];
+            $('#sliderRows .row').each(function(){
+                items.push({ title: $(this).find('.slide-title').val()||'', image: normalizeToUploads($(this).find('.slide-image').val()||'') });
+            });
+            $.ajax({ url: API + '/api/slider', method: 'POST', data: JSON.stringify(items), contentType:'application/json', headers: authHeaders() })
+              .done(function(){ 
+                  showToast('轮播图保存成功', 'success');
+              })
+              .fail(function(xhr) {
+                  handleAuthFail(xhr);
+                  showToast('保存失败，请重试', 'error');
+              });
+            return false;
+        });
+
+        // 作者管理
+        var pendingAuthorAvatarFile = null;
+        
+        function loadAuthors(){
+            $.getJSON(API + '/api/authors').done(function(authors){
+                var $tb = $('#author_tbody').empty();
+                (authors||[]).forEach(function(author){
+                    var tr = $('<tr>');
+                    tr.append('<td>'+ (author.id||'') +'</td>');
+                    var avatarUrl = toAbs(author.avatar||'');
+                    tr.append('<td>'+ (avatarUrl?('<img class="thumb" src="'+ avatarUrl +'">'):'') +'</td>');
+                    tr.append('<td>'+ (author.name||'') +'</td>');
+                    tr.append('<td>'+ (author.position||'') +'</td>');
+                    var act = $('<td class="actions">');
+                    $('<button class="btn btn-mini" type="button">编辑</button>').on('click', function(){ fillAuthorForm(author); }).appendTo(act);
+                    $('<button class="btn btn-mini btn-danger" type="button">删除</button>').on('click', function(){ deleteAuthor(author.id); }).appendTo(act);
+                    tr.append(act);
+                    $tb.append(tr);
+                });
+            });
+        }
+        
+        function fillAuthorForm(author){
+            $('#author_id').val(author.id||'');
+            $('#author_name').val(author.name||'');
+            $('#author_position').val(author.position||'');
+            $('#author_bio').val(author.bio||'');
+            $('#author_avatar').val(author.avatar||'');
+            $('#author_twitter').val(author.social && author.social.twitter || '');
+            $('#author_facebook').val(author.social && author.social.facebook || '');
+            $('#author_linkedin').val(author.social && author.social.linkedin || '');
+            $('#author_email').val(author.social && author.social.email || '');
+            if(author.avatar){ $('#author_avatar_preview').attr('src', toAbs(author.avatar)).show(); } else { $('#author_avatar_preview').hide(); }
+        }
+        
+        function collectAuthor(){
+            return {
+                name: $('#author_name').val()||'',
+                position: $('#author_position').val()||'',
+                bio: $('#author_bio').val()||'',
+                avatar: normalizeToUploads($('#author_avatar').val()||''),
+                social: {
+                    twitter: $('#author_twitter').val()||'',
+                    facebook: $('#author_facebook').val()||'',
+                    linkedin: $('#author_linkedin').val()||'',
+                    email: $('#author_email').val()||''
+                }
+            };
+        }
+        
+        function uploadAuthorAvatarThenSave(payload, isUpdate, id){
+            var p = $.Deferred().resolve();
+            if(pendingAuthorAvatarFile){ 
+                p = p.then(function(){ 
+                    var fd = new FormData(); 
+                    fd.append('file', pendingAuthorAvatarFile); 
+                    fd.append('filename', slug($('#author_name').val()||'author')); 
+                    return $.ajax({ 
+                        url: API + '/api/upload', 
+                        method:'POST', 
+                        data:fd, 
+                        processData:false, 
+                        contentType:false, 
+                        headers: authHeaders() 
+                    }).done(function(res){ 
+                        if(res&&res.url){ 
+                            payload.avatar = res.url; 
+                        } 
+                    }); 
+                }); 
+            }
+            p.then(function(){
+                var req = isUpdate ? { url: API + '/api/authors/' + id, method: 'PUT' } : { url: API + '/api/authors', method: 'POST' };
+                $.ajax($.extend({}, req, { data: JSON.stringify(payload), contentType: 'application/json', headers: authHeaders() }))
+                 .done(function(){ 
+                     $('#authorForm')[0].reset(); 
+                     resetAuthorPreviews(); 
+                     loadAuthors(); 
+                     showToast(isUpdate ? '作者信息更新成功' : '作者添加成功', 'success');
+                 })
+                 .fail(function(xhr) {
+                     handleAuthFail(xhr);
+                     showToast('操作失败，请重试', 'error');
+                 });
+            });
+        }
+        
+        function resetAuthorPreviews(){ 
+            pendingAuthorAvatarFile = null; 
+            $('#author_avatar_preview').hide().attr('src',''); 
+        }
+        
+        function deleteAuthor(id){ 
+            if(!id) return; 
+            if(!confirm('确定删除 ID=' + id + ' 的作者吗？')) return; 
+            $.ajax({url: API + '/api/authors/' + id, method: 'DELETE', headers: authHeaders()})
+                .done(function(){ 
+                    loadAuthors(); 
+                    showToast('作者删除成功', 'success');
+                })
+                .fail(function(xhr) {
+                    handleAuthFail(xhr);
+                    showToast('删除失败，请重试', 'error');
+                }); 
+        }
+        
+        $('#author_avatar_file').on('change', function(){ 
+            pendingAuthorAvatarFile = this.files && this.files[0] ? this.files[0] : null; 
+            if(pendingAuthorAvatarFile){ 
+                showPreview(pendingAuthorAvatarFile, '#author_avatar_preview'); 
+            } 
+        });
+        
+        $('#authorForm').on('submit', function(e){ 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            var id = $('#author_id').val(); 
+            var payload = collectAuthor(); 
+            uploadAuthorAvatarThenSave(payload, !!id, id); 
+            return false; 
+        });
+        
+        $('#saveAuthor').on('click', function(e){ 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            var id = $('#author_id').val(); 
+            var payload = collectAuthor(); 
+            uploadAuthorAvatarThenSave(payload, !!id, id); 
+            return false; 
+        });
+        
+        $('#resetAuthor').on('click', function(e){ 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            $('#authorForm')[0].reset(); 
+            resetAuthorPreviews(); 
+            $('#author_id').val(''); 
+            showToast('作者表单已重置', 'info');
+        });
+
+        // 初始加载数据
+        $.getJSON(API + '/api/slider').done(renderSlider);
+        loadAuthors();
+        load();
+        $('#logout').on('click', function(){ localStorage.removeItem('db_token'); window.location.href = 'login.html'; });
+    })();
+    </script>
+    
+</body>
+</html>
+
+

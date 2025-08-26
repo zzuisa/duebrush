@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if (IE 9)]><html class="no-js ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en-US"> <!--<![endif]-->
+<head>
+
+<!-- Meta Tags -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>Düsselbrush</title>   
+
+<meta name="description" content="Insert Your Site Description" /> 
+
+<!-- Mobile Specifics -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="HandheldFriendly" content="true"/>
+<meta name="MobileOptimized" content="320"/>   
+
+<!-- Mobile Internet Explorer ClearType Technology -->
+<!--[if IEMobile]>  <meta http-equiv="cleartype" content="on">  <![endif]-->
+
+<!-- Bootstrap -->
+<link href="_include/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Main Style -->
+<link href="_include/css/main.css" rel="stylesheet">
+
+<!-- Supersized -->
+<link href="_include/css/supersized.css" rel="stylesheet">
+<link href="_include/css/supersized.shutter.css" rel="stylesheet">
+
+<!-- FancyBox -->
+<link href="_include/css/fancybox/jquery.fancybox.css" rel="stylesheet">
+
+<!-- Font Icons -->
+<link href="_include/css/fonts.css" rel="stylesheet">
+
+<!-- Shortcodes -->
+<link href="_include/css/shortcodes.css" rel="stylesheet">
+
+<!-- Responsive -->
+<link href="_include/css/bootstrap-responsive.min.css" rel="stylesheet">
+<link href="_include/css/responsive.css" rel="stylesheet">
+
+<!-- Supersized -->
+<link href="_include/css/supersized.css" rel="stylesheet">
+<link href="_include/css/supersized.shutter.css" rel="stylesheet">
+
+<!-- Google Font -->
+<link href='_include/css/fonts/google.css' rel='stylesheet' type='text/css'>
+
+<!-- Fav Icon -->
+<link rel="shortcut icon" href="#">
+
+<link rel="apple-touch-icon" href="#">
+<link rel="apple-touch-icon" sizes="114x114" href="#">
+<link rel="apple-touch-icon" sizes="72x72" href="#">
+<link rel="apple-touch-icon" sizes="144x144" href="#">
+
+<!-- 作者头像统一样式 -->
+<style>
+        /* 作者头像统一样式 */
+        .profile .image-wrap {
+            position: relative !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            height: 280px !important; /* 固定高度 */
+            margin-bottom: 20px !important;
+        }
+        
+        /* 环境指示器样式 */
+        #env-indicator {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            z-index: 9999 !important;
+            background: rgba(0,0,0,0.7) !important;
+            color: white !important;
+            padding: 8px 12px !important;
+            border-radius: 6px !important;
+            font-size: 12px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        }
+        
+        #env-indicator #envSwitch {
+            margin-left: 10px !important;
+            padding: 3px 6px !important;
+            font-size: 11px !important;
+            background: white !important;
+            color: black !important;
+            border: none !important;
+            border-radius: 3px !important;
+        }
+
+.profile .image-wrap img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* 保持比例，裁剪多余部分 */
+    object-position: center !important; /* 居中显示 */
+    transition: all 0.3s ease !important;
+}
+
+.profile .image-wrap:hover img {
+    transform: scale(1.05) !important; /* 悬停时轻微放大 */
+}
+
+.profile .hover-wrap {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.profile .image-wrap:hover .hover-wrap {
+    opacity: 1 !important;
+}
+
+.profile .overlay-text-thumb {
+    color: white !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    padding: 10px !important;
+    position: relative !important;
+    width: auto !important;
+    height: auto !important;
+    top: auto !important;
+    margin: 0 !important;
+    line-height: normal !important;
+    text-transform: none !important;
+}
+
+/* 手机端适配 */
+@media (max-width: 768px) {
+    .profile .image-wrap {
+        height: 220px !important; /* 手机端稍微小一点 */
+    }
+    
+    .profile .overlay-text-thumb {
+        font-size: 14px !important;
+    }
+}
+
+        @media (max-width: 480px) {
+            .profile .image-wrap {
+                height: 180px !important; /* 超小屏幕更小 */
+            }
+            
+            .profile .overlay-text-thumb {
+                font-size: 12px !important;
+            }
+            
+            /* 手机端环境指示器适配 */
+            #env-indicator {
+                bottom: 10px !important;
+                right: 10px !important;
+                left: 10px !important;
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+            }
+            
+            #env-indicator #envSwitch {
+                margin-left: 8px !important;
+                padding: 2px 4px !important;
+                font-size: 10px !important;
+            }
+        }
+</style>
+
+<!-- Modernizr -->
+<script src="_include/js/modernizr.js"></script>
+
+<!-- Analytics -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'Insert Your Code']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<!-- End Analytics -->
+
+</head>
+
+
+<body>
+
+<!-- This section is for Splash Screen -->
+<div class="ole">
+<section id="jSplash">
+	<div id="circle"></div>
+</section>
+</div>
+<!-- End of Splash Screen -->
+
+<!-- Homepage Slider -->
+<div id="home-slider">	
+    <div class="overlay"></div>
+
+    <div class="slider-text">
+    	<div id="slidecaption"></div>
+        <a id="nextsection" href="#work"><i class="font-icon-arrow-simple-down"></i></a>
+
+    </div>   
+	
+	<div class="control-nav">
+        <a id="prevslide" class="load-item"><i class="font-icon-arrow-simple-left"></i></a>
+        <a id="nextslide" class="load-item"><i class="font-icon-arrow-simple-right"></i></a>
+        <ul id="slide-list"></ul>
+        
+    </div>
+</div>
+<!-- End Homepage Slider -->
+
+<!-- Header -->
+<header>
+    <div class="sticky-nav">
+    	<a id="mobile-nav" class="menu-nav" href="#menu-nav"></a>
+        
+        <div id="logo">
+        	<a id="goUp" href="#home-slider" title="Düsselbrush | Responsive One Page Template">Düsselbrush</a>
+        </div>
+        
+        <nav id="menu">
+        	<ul id="menu-nav">
+            	<li class="current"><a href="#home-slider">Home</a></li>
+                <li><a href="#work">Portfolio</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#contact">Contact</a></li>
+				<!-- <li><a href="shortcodes.html" class="external">Shortcodes</a></li> -->
+            </ul>
+        </nav>
+        
+    </div>
+</header>
+<!-- End Header -->
+
+<!-- Our Work Section -->
+<div id="work" class="page">
+	<div class="container">
+    	<!-- Title Page -->
+        <div class="row">
+            <div class="span12">
+                <div class="title-page">
+                    <h2 class="title">Portfolio</h2>
+                    <h3 class="title-description">Check it.</h3>
+                </div>
+            </div>
+        </div>
+        <!-- End Title Page -->
+        
+        <!-- Portfolio Projects -->
+        <div class="row">
+        	<div class="span3">
+            	<!-- Filter -->
+                <nav id="options" class="work-nav">
+                    <ul id="filters" class="option-set" data-option-key="filter">
+                    	<li class="type-work">Type of Work</li>
+                        <li><a href="#filter" data-option-value="*" class="selected">All Projects</a></li>
+                        <li><a href="#filter" data-option-value=".design">Design</a></li>
+                        <li><a href="#filter" data-option-value=".photography">Photography</a></li>
+                        <li><a href="#filter" data-option-value=".video">Video</a></li>
+                    </ul>
+                </nav>
+                <!-- End Filter -->
+            </div>
+            
+            <div class="span9">
+            	<div class="row">
+                	<section id="projects">
+                    	<ul id="thumbs">
+                        
+                        	<!-- 动态渲染：由 main.js 从 API 拉取填充 -->
+                        </ul>
+                    </section>
+                    
+            	</div>
+            </div>
+        </div>
+        <!-- End Portfolio Projects -->
+    </div>
+</div>
+<!-- End Our Work Section -->
+
+<!-- About Section -->
+<div id="about" class="page-alternate">
+<div class="container">
+    <!-- Title Page -->
+    <div class="row">
+        <div class="span12">
+            <div class="title-page">
+                <h2 class="title">About Us</h2>
+                <h3 class="title-description">Learn About our Team &amp; Culture.</h3>
+            </div>
+        </div>
+    </div>
+    <!-- End Title Page -->
+    
+    <!-- People -->
+    <div class="row" id="authors-container">
+        <!-- 作者信息将通过JavaScript动态加载 -->
+    </div>
+    <!-- End People -->
+</div>
+</div>
+<!-- End About Section -->
+
+
+<!-- Contact Section -->
+<div id="contact" class="page">
+<div class="container">
+    <!-- Title Page -->
+    <div class="row">
+        <div class="span12">
+            <div class="title-page">
+                <h2 class="title">Get in Touch</h2>
+                <h3 class="title-description">We’re currently accepting new client projects. We look forward to serving you.</h3>
+            </div>
+        </div>
+    </div>
+    <!-- End Title Page -->
+    
+    <!-- Contact Form -->
+    <div class="row">
+    	<div class="span9">
+        
+        	<form id="contact-form" class="contact-form" action="#">
+            	<p class="contact-name">
+            		<input id="contact_name" type="text" placeholder="Full Name" value="" name="name" />
+                </p>
+                <p class="contact-email">
+                	<input id="contact_email" type="text" placeholder="Email Address" value="" name="email" />
+                </p>
+                <p class="contact-message">
+                	<textarea id="contact_message" placeholder="Your Message" name="message" rows="15" cols="40"></textarea>
+                </p>
+                <p class="contact-submit">
+                	<a id="contact-submit" class="submit" href="#">Send Your Email</a>
+                </p>
+                
+                <div id="response">
+                
+                </div>
+            </form>
+         
+        </div>
+        
+        <div class="span3">
+        	<div class="contact-details">
+        		<h3>Contact Details</h3>
+                <ul>
+                    <li><a href="#">zzuisa.cn@gmail.com</a></li>
+                    <li>(049) 15259023xxx</li>
+                    <li>
+                        Mr. Wang
+                        <br>
+                        Düsseldorf
+                        <br>
+                        Germany
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- End Contact Form -->
+</div>
+</div>
+<!-- End Contact Section -->
+
+<!-- Twitter Feed -->
+<div id="twitter-feed" class="page-alternate">
+	<div class="container">
+    	<div class="row">
+            <div class="span12">
+                <div class="follow">
+                    <a href="https://roguelife.de/" title="Follow Me on Twitter" target="_blank"><i class="font-icon-social-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Twitter Feed -->
+
+<!-- Socialize -->
+<div id="social-area" class="page">
+	<div class="container">
+    	<div class="row">
+            <div class="span12">
+                <nav id="social">
+                    <ul>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Twitter" target="_blank"><span class="font-icon-social-twitter"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Dribbble" target="_blank"><span class="font-icon-social-dribbble"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Forrst" target="_blank"><span class="font-icon-social-forrst"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Behance" target="_blank"><span class="font-icon-social-behance"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Facebook" target="_blank"><span class="font-icon-social-facebook"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Google Plus" target="_blank"><span class="font-icon-social-google-plus"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on LinkedIn" target="_blank"><span class="font-icon-social-linkedin"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on ThemeForest" target="_blank"><span class="font-icon-social-envato"></span></a></li>
+                        <li><a href="https://roguelife.de/" title="Follow Me on Zerply" target="_blank"><span class="font-icon-social-zerply"></span></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Socialize -->
+
+<!-- Footer -->
+<footer>
+	<p class="credits">&copy; Copyright &copy; 2025. Düsselbrush All rights reserved.<a target="_blank" href="https:roguelife.de"></a></p>
+</footer>
+<!-- End Footer -->
+
+<!-- Environment Indicator -->
+<div id="env-indicator" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: rgba(0,0,0,0.7); color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+    <span id="env-text"></span>
+    <select id="envSwitch" style="margin-left: 10px; padding: 3px 6px; font-size: 11px; background: white; color: black; border: none; border-radius: 3px;">
+        <option value="https://roguelife.de">生产</option>
+        <option value="http://localhost:5000">开发</option>
+    </select>
+</div>
+<!-- End Environment Indicator -->
+
+<!-- Back To Top -->
+<a id="back-to-top" href="#">
+	<i class="font-icon-arrow-simple-up"></i>
+</a>
+<!-- End Back to Top -->
+
+
+<!-- Js -->
+<script src="_include/js/jquery.min.js"></script> <!-- jQuery Core -->
+<script src="_include/js/bootstrap.min.js"></script> <!-- Bootstrap -->
+<script src="_include/js/supersized.3.2.7.min.js"></script> <!-- Slider -->
+<script src="_include/js/waypoints.js"></script> <!-- WayPoints -->
+<script src="_include/js/waypoints-sticky.js"></script> <!-- Waypoints for Header -->
+<script src="_include/js/jquery.isotope.js"></script> <!-- Isotope Filter -->
+<script src="_include/js/jquery.fancybox.pack.js"></script> <!-- Fancybox -->
+<script src="_include/js/jquery.fancybox-media.js"></script> <!-- Fancybox for Media -->
+<script src="_include/js/jquery.tweet.js"></script> <!-- Tweet -->
+<script src="_include/js/plugins.js"></script> <!-- Contains: jPreloader, jQuery Easing, jQuery ScrollTo, jQuery One Page Navi -->
+<script src="_include/js/main.js"></script> <!-- Default JS -->
+<script>
+// 环境管理
+var API_BASE = localStorage.getItem('api_base') || 'https://roguelife.de';
+
+// 环境指示器
+function showEnvIndicator() {
+    var envText = API_BASE.includes('localhost') ? '开发环境' : '生产环境';
+    $('#env-text').text(envText);
+    $('#envSwitch').val(API_BASE);
+    $('#env-indicator').show();
+}
+
+// 环境切换处理
+$('#envSwitch').on('change', function() {
+    var newApi = $(this).val();
+    if (newApi !== API_BASE) {
+        if (confirm('确定切换环境吗？页面将重新加载。')) {
+            API_BASE = newApi;
+            localStorage.setItem('api_base', API_BASE);
+            window.location.reload();
+        } else {
+            $(this).val(API_BASE); // 恢复原值
+        }
+    }
+});
+
+// 显示环境指示器（仅在开发环境或本地访问时显示）
+if (API_BASE.includes('localhost') || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    showEnvIndicator();
+}
+
+// 加载作者信息
+$(document).ready(function() {
+    $.getJSON(API_BASE + '/api/authors')
+        .done(function(authors) {
+            var container = $('#authors-container');
+            container.empty();
+            
+            authors.forEach(function(author) {
+                var socialHtml = '';
+                if (author.social) {
+                    if (author.social.twitter) {
+                        socialHtml += '<li><a href="' + author.social.twitter + '" target="_blank"><i class="font-icon-social-twitter"></i></a></li>';
+                    }
+                    if (author.social.facebook) {
+                        socialHtml += '<li><a href="' + author.social.facebook + '" target="_blank"><i class="font-icon-social-facebook"></i></a></li>';
+                    }
+                    if (author.social.linkedin) {
+                        socialHtml += '<li><a href="' + author.social.linkedin + '" target="_blank"><i class="font-icon-social-linkedin"></i></a></li>';
+                    }
+                    if (author.social.email) {
+                        socialHtml += '<li><a href="mailto:' + author.social.email + '"><i class="font-icon-social-email"></i></a></li>';
+                    }
+                }
+                
+                var avatarUrl = author.avatar || '_include/img/profile/profile-01.jpg';
+                if (avatarUrl && !avatarUrl.startsWith('http') && !avatarUrl.startsWith('_include')) {
+                    avatarUrl = API_BASE + avatarUrl;
+                }
+                
+                var profileHtml = `
+                    <div class="span4 profile">
+                        <div class="image-wrap">
+                            <div class="hover-wrap">
+                                <span class="overlay-img"></span>
+                                <span class="overlay-text-thumb">${author.position || ''}</span>
+                            </div>
+                            <img src="${avatarUrl}" alt="${author.name}">
+                        </div>
+                        <h3 class="profile-name">${author.name}</h3>
+                        <p class="profile-description">${author.bio || ''}</p>
+                        <div class="social">
+                            <ul class="social-icons">
+                                ${socialHtml}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                
+                container.append(profileHtml);
+            });
+        })
+        .fail(function() {
+            console.log('Failed to load authors');
+        });
+});
+</script>
+<!-- End Js -->
+
+</body>
+</html>

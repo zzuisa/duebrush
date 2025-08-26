@@ -1,0 +1,40 @@
+{
+  "slider": [
+    {
+      "title": "Düsselbrush",
+      "image": "/uploads/slider-images/image01.jpg"
+    },
+    {
+      "title": "Düsselbrush",
+      "image": "/uploads/slider-images/image02.jpg"
+    }
+  ],
+  "authors": [
+    {
+      "id": 1,
+      "name": "Mr. Chuan",
+      "position": "CTO",
+      "bio": "x",
+      "avatar": "/uploads/chuan-pu.jpg",
+      "social": {
+        "twitter": "https://roguelife.de",
+        "facebook": "https://roguelife.de",
+        "linkedin": "https://roguelife.de",
+        "email": "https://roguelife.de"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Musk",
+      "position": "Founder",
+      "bio": "Ego",
+      "avatar": "/uploads/musk.jpg",
+      "social": {
+        "twitter": "",
+        "facebook": "",
+        "linkedin": "",
+        "email": ""
+      }
+    }
+  ]
+}

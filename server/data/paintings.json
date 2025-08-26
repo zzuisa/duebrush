@@ -1,0 +1,52 @@
+{
+  "paintings": [
+    {
+      "id": 1,
+      "title": "Sample 01",
+      "description": "",
+      "category": "design",
+      "thumb_image": "/uploads/sample-01-thumb.jpg",
+      "full_image": "/uploads/sample-01.jpg",
+      "year": "",
+      "size": "",
+      "material": "",
+      "for_sale": true
+    },
+    {
+      "id": 2,
+      "title": "Sample 02",
+      "description": "",
+      "category": "design",
+      "thumb_image": "/uploads/sample-02-thumb.jpg",
+      "full_image": "/uploads/sample-02.jpg",
+      "year": "",
+      "size": "",
+      "material": "",
+      "for_sale": false
+    },
+    {
+      "id": 3,
+      "title": "Sample 03",
+      "description": "",
+      "category": "photography",
+      "thumb_image": "/uploads/sample-03-thumb.jpg",
+      "full_image": "/uploads/sample-03.jpg",
+      "year": "",
+      "size": "",
+      "material": "",
+      "for_sale": true
+    },
+    {
+      "id": 4,
+      "title": "Sample 04",
+      "description": "",
+      "category": "photography",
+      "thumb_image": "/uploads/sample-04-thumb.jpg",
+      "full_image": "/uploads/sample-04.jpg",
+      "year": "",
+      "size": "",
+      "material": "",
+      "for_sale": true
+    }
+  ]
+}

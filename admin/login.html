@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Düsselbrush Admin</title>
+    <link href="../_include/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f7f7f7}
+        .card{background:#fff;border:1px solid #eee;border-radius:8px;padding:24px;max-width:360px;width:100%;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+        .muted{color:#888;font-size:12px}
+        
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            body { padding: 20px; }
+            .card { 
+                max-width: 100%; 
+                margin: 0 10px;
+                padding: 20px;
+            }
+            .card h3 { font-size: 20px; }
+            input[type="password"] {
+                width: 100%;
+                box-sizing: border-box;
+                margin-bottom: 10px;
+            }
+            .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .card { 
+                padding: 15px;
+                margin: 0 5px;
+            }
+            .card h3 { font-size: 18px; }
+        }
+        
+        /* Toast 提示样式 */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        #toast {
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            min-width: 200px;
+            max-width: 300px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        #toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        #toast.success {
+            background: #28a745;
+        }
+        
+        #toast.error {
+            background: #dc3545;
+        }
+        
+        #toast.warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        #toast.info {
+            background: #17a2b8;
+        }
+        
+        /* 手机端Toast适配 */
+        @media (max-width: 768px) {
+            #toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            #toast {
+                min-width: auto;
+                max-width: none;
+                width: 100%;
+            }
+        }
+    </style>
+    <script>window.API_BASE = window.API_BASE || 'https://roguelife.de';</script>
+    <script src="../_include/js/jquery.min.js"></script>
+</head>
+<body>
+    <div class="card">
+        <h3 style="margin-top:0">管理员登录</h3>
+        <!-- <p class="muted">默认密码可用环境变量 ADMIN_PASSWORD 设置。</p> -->
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px;">环境选择</label>
+            <select id="envSwitch" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                <option value="https://roguelife.de">生产环境</option>
+                <option value="http://localhost:5000">开发环境</option>
+            </select>
+        </div>
+        <form id="loginForm">
+            <label>密码</label>
+            <input id="password" type="password" class="span4" placeholder="输入管理密码">
+            <div style="margin-top:12px">
+                <button id="submit" class="btn btn-primary">登录</button>
+            </div>
+        </form>
+        <div id="msg" class="muted" style="margin-top:8px"></div>
+    </div>
+    
+    <!-- Toast 提示组件 -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: none;">
+        <div id="toast" style="background: #333; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin-bottom: 10px; min-width: 200px; max-width: 300px;">
+            <div id="toast-message"></div>
+        </div>
+    </div>
+
+<script>
+(function(){
+    // 环境管理
+    var API = localStorage.getItem('api_base') || window.API_BASE || 'https://roguelife.de';
+    
+    // Toast 提示函数
+    function showToast(message, type = 'info', duration = 3000) {
+        var toast = $('#toast');
+        var container = $('#toast-container');
+        
+        // 设置消息和类型
+        $('#toast-message').text(message);
+        toast.removeClass('success error warning info').addClass(type);
+        
+        // 显示toast
+        container.show();
+        setTimeout(function() {
+            toast.addClass('show');
+        }, 10);
+        
+        // 自动隐藏
+        setTimeout(function() {
+            toast.removeClass('show');
+            setTimeout(function() {
+                container.hide();
+            }, 300);
+        }, duration);
+    }
+    
+    // 设置当前环境
+    $('#envSwitch').val(API);
+    
+    // 环境切换处理
+    $('#envSwitch').on('change', function() {
+        var newApi = $(this).val();
+        if (newApi !== API) {
+            API = newApi;
+            localStorage.setItem('api_base', API);
+            localStorage.removeItem('db_token');
+            showToast('环境已切换，请重新登录', 'info');
+        }
+    });
+    
+    $('#loginForm').on('submit', function(e){
+        e.preventDefault();
+        var pwd = $('#password').val();
+        showToast('登录中...', 'info');
+        $.ajax({
+            url: API + '/api/login',
+            method: 'POST',
+            data: JSON.stringify({password: pwd}),
+            contentType: 'application/json'
+        }).done(function(res){
+            if(res && res.success && res.token){
+                localStorage.setItem('db_token', res.token);
+                showToast('登录成功，正在跳转...', 'success');
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } else {
+                showToast('登录失败', 'error');
+            }
+        }).fail(function(xhr){
+            var msg = (xhr.responseJSON && xhr.responseJSON.message) || '登录失败';
+            showToast(msg, 'error');
+        });
+    });
+})();
+</script>
+</body>
+</html>
+
+
+
