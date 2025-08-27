@@ -35,4 +35,4 @@ def serve_static(filename):
             return send_from_directory(str(static_path), filename)
     
     # 如果文件不存在，返回404
-    return jsonify({"error": "Not Found"}), 404
+    return jsonify({"success": False, "message": "File not found"}), 404

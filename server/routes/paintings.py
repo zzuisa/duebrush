@@ -23,7 +23,7 @@ def get_painting(pid):
     """获取单个绘画"""
     painting = PaintingModel.get_by_id(pid)
     if not painting:
-        return jsonify({"error": "Not Found"}), 404
+        return jsonify({"success": False, "message": "Painting not found"}), 404
     return jsonify(painting)
 
 @paintings_bp.put('/api/paintings/<int:pid>')
@@ -34,7 +34,7 @@ def update_painting(pid):
     payload = request.get_json(silent=True) or {}
     updated_painting = PaintingModel.update(pid, payload)
     if not updated_painting:
-        return jsonify({"error": "Not Found"}), 404
+        return jsonify({"success": False, "message": "Painting not found"}), 404
     return jsonify(updated_painting)
 
 @paintings_bp.delete('/api/paintings/<int:pid>')
@@ -42,5 +42,5 @@ def update_painting(pid):
 def delete_painting(pid):
     """删除绘画"""
     if PaintingModel.delete(pid):
-        return jsonify({"status": "deleted", "id": pid})
-    return jsonify({"error": "Not Found"}), 404
+        return jsonify({"success": True, "message": "Painting deleted", "id": pid})
+    return jsonify({"success": False, "message": "Painting not found"}), 404

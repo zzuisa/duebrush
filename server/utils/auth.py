@@ -12,10 +12,10 @@ def require_auth(f):
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get('Authorization', '')
         if not auth_header.startswith('Bearer '):
-            return jsonify({"error": "Unauthorized"}), 401
+            return jsonify({"success": False, "message": "No token provided"}), 401
         token = auth_header.split(' ', 1)[1].strip()
-        if token not in active_tokens:
-            return jsonify({"error": "Unauthorized"}), 401
+        if not validate_token(token):
+            return jsonify({"success": False, "message": "Invalid token"}), 401
         return f(*args, **kwargs)
     return wrapper
 

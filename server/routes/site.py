@@ -42,7 +42,7 @@ def get_author(aid):
     """获取单个作者"""
     author = SiteModel.get_author_by_id(aid)
     if not author:
-        return jsonify({"error": "Not Found"}), 404
+        return jsonify({"success": False, "message": "Author not found"}), 404
     return jsonify(author)
 
 @site_bp.put('/api/authors/<int:aid>')
@@ -53,16 +53,16 @@ def update_author(aid):
     payload = request.get_json(silent=True) or {}
     updated_author = SiteModel.update_author(aid, payload)
     if not updated_author:
-        return jsonify({"error": "Not Found"}), 404
+        return jsonify({"success": False, "message": "Author not found"}), 404
     return jsonify(updated_author)
 
-@site_bp.delete('/api/authors/<int:aid>')
+@site_bp.delete('/api/authors/<int:author_id>')
 @require_auth
-def delete_author(aid):
+def delete_author(author_id):
     """删除作者"""
-    if SiteModel.delete_author(aid):
-        return jsonify({"status": "deleted", "id": aid})
-    return jsonify({"error": "Not Found"}), 404
+    if SiteModel.delete_author(author_id):
+        return jsonify({"success": True, "message": "Author deleted", "id": author_id})
+    return jsonify({"success": False, "message": "Author not found"}), 404
 
 # 向后兼容的单个作者API
 @site_bp.get('/api/author')
