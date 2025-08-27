@@ -1,2 +1,24 @@
 server/uploads/*
 *.out
+
+# Python 缓存文件
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+
+# Python 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
