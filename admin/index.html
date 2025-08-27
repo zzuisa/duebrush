@@ -531,7 +531,26 @@
             }, duration);
         }
 
-        if(!token){ window.location.href = 'login.html'; return; }
+        // 验证token是否有效
+        function verifyToken() {
+            if (!token) {
+                window.location.href = 'login.html';
+                return $.Deferred().reject();
+            }
+            
+            return $.ajax({
+                url: API + '/api/verify-token',
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            }).fail(function(xhr) {
+                if (xhr && xhr.status === 401) {
+                    localStorage.removeItem('db_token');
+                    window.location.href = 'login.html';
+                }
+                return $.Deferred().reject();
+            });
+        }
+        
         function authHeaders() { return { 'Authorization': 'Bearer ' + token }; }
         function handleAuthFail(xhr){ if(xhr && xhr.status === 401){ localStorage.removeItem('db_token'); window.location.href = 'login.html'; } }
         function toAbs(url){ if(!url) return ''; if(/^https?:\/\//i.test(url)) return url; if(url.startsWith('/')) return API + url; return API + '/uploads/' + url; }
@@ -867,7 +886,11 @@
 
         // Contact Form Management
         function loadContacts(){
-            $.getJSON(API + '/api/contacts').done(function(contacts){
+            $.ajax({
+                url: API + '/api/contacts',
+                method: 'GET',
+                headers: authHeaders()
+            }).done(function(contacts){
                 var $tb = $('#contact_tbody').empty();
                 (contacts||[]).forEach(function(contact, index){
                     var tr = $('<tr>');
@@ -905,7 +928,11 @@
         }
 
         function loadContactStats(){
-            $.getJSON(API + '/api/contacts/stats').done(function(stats){
+            $.ajax({
+                url: API + '/api/contacts/stats',
+                method: 'GET',
+                headers: authHeaders()
+            }).done(function(stats){
                 var statsText = 'Total Messages: ' + stats.total + ' | This Month: ' + stats.recent_count;
                 $('#contact-stats').text(statsText);
             }).fail(function(xhr) {
@@ -961,13 +988,30 @@
                 });
         }
 
-        // 初始加载数据
-        $.getJSON(API + '/api/slider').done(renderSlider);
-        loadAuthors();
-        load();
-        loadContacts(); // Load contact forms initially
-        loadContactStats(); // Load contact form statistics
-        $('#logout').on('click', function(){ localStorage.removeItem('db_token'); window.location.href = 'login.html'; });
+        // 验证token后加载数据
+        verifyToken().then(function() {
+            // 初始加载数据
+            $.getJSON(API + '/api/slider').done(renderSlider);
+            loadAuthors();
+            load();
+            loadContacts(); // Load contact forms initially
+            loadContactStats(); // Load contact form statistics
+        }).fail(function() {
+            // Token验证失败，已经在verifyToken中处理了跳转
+        });
+        
+        $('#logout').on('click', function(){ 
+            // 调用后端登出API
+            $.ajax({
+                url: API + '/api/logout',
+                method: 'POST',
+                headers: authHeaders()
+            }).always(function() {
+                // 无论成功失败都清除本地token并跳转
+                localStorage.removeItem('db_token'); 
+                window.location.href = 'login.html'; 
+            });
+        });
     })();
     </script>
     
